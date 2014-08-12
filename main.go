@@ -7,14 +7,20 @@ import (
 	"github.com/crackcomm/go-actions/encoding/yaml"
 	"github.com/crackcomm/go-actions/local"
 	_ "github.com/crackcomm/go-core"
-	yml "gopkg.in/yaml.v1"
 	"io/ioutil"
 	"os"
 	"strings"
+	"flag"
+)
+
+var (
+	filename string = "cmds.yaml" // cmds filename
+
 )
 
 func main() {
-	actions, err := fileToActions("cmds.yaml")
+	flag.Parse()
+	actions, err := fileToActions(filename)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -45,13 +51,78 @@ func main() {
 		return
 	}
 
-	ybody, err := yml.Marshal(res)
-	if err != nil {
-		fmt.Printf("error: %v\n", err)
-		return
-	}
+	printMap(res, 1)
+}
 
-	fmt.Printf("\n%s", indent(string(ybody)))
+// return n * 2 spaces
+func spaces(n int) string {
+	return strings.Repeat(" ", n * 2)
+}
+
+// print with spaces
+func prints(n int, f string, a ...interface{}) {
+	fmt.Printf("%s%s", spaces(n), fmt.Sprintf(f, a...))
+}
+
+func printValue(value interface{}, n int) {
+	switch value.(type) {
+	case action.Map:
+		print("\n")
+		printMap(value.(action.Map), n + 1)
+	case []interface{}:
+		print("\n")
+		for _, v := range value.([]interface{}) {
+			// todo: n+1 indent
+			prints(n+1, "%v\n", v)
+		}
+	case []string:
+		for _, v := range value.([]string) {
+			// todo: n+1 indent
+			prints(n+1, "%v\n", v)
+		}
+	case string:
+		lines := strings.Split(value.(string), "\n")
+		print("\n")
+		for _, ln := range lines {
+			prints(n+1, "%s\n", ln)
+		}
+	default:
+		f := action.Format{value}
+		if v, ok := f.String(); ok {
+			prints(0, "%#v\n", v)
+		} else {
+			prints(0, "%#v\n", value)
+		}
+	}
+}
+
+func printKeyValue(key string, value interface{}, n int) {
+	prints(n, "%s: ", key)
+	printValue(value, n)
+}
+
+func printMap(m action.Map, n int) {
+	m = mapBytes(m)
+	for key, value := range m {
+		printKeyValue(key, value, n)
+	}
+}
+
+// mapBytes - Iterates through a result map and tranforms all byte arrays into strings.
+func mapBytes(m action.Map) action.Map {
+	// Iterate map
+	for k, v := range m {
+		// Pass if value is nil
+		if v == nil {
+			continue
+		}
+
+		// If it's a byte array we are gonna make it a string
+		if arr, ok := v.([]byte); ok {
+			m[k] = string(arr)
+		}
+	}
+	return m
 }
 
 func indent(body string) string {
@@ -70,4 +141,8 @@ func fileToActions(filename string) (map[string]*action.Action, error) {
 		return nil, err
 	}
 	return yaml.UnmarshalMany(body)
+}
+
+func init() {
+	flag.StringVar(&filename, "file", filename, "Cmds file")
 }
