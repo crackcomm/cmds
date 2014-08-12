@@ -25,12 +25,12 @@ google.title:
 
 clean:
   - cmd.run:
-    cmd: rm -rf build
+    name: rm -rf build
 
 build:
   - clean
   - cmd.run:
-    cmd: gulp build
+    name: gulp build
 ```
 
 ```
