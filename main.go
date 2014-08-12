@@ -94,9 +94,9 @@ func printValue(value interface{}, n int) {
 	default:
 		f := action.Format{value}
 		if v, ok := f.String(); ok {
-			prints(0, "%#v", v)
+			prints(0, "%#v\n", v)
 		} else {
-			prints(0, "%#v", value)
+			prints(0, "%#v\n", value)
 		}
 	}
 }
