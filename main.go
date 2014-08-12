@@ -72,26 +72,31 @@ func printValue(value interface{}, n int) {
 	case []interface{}:
 		print("\n")
 		for _, v := range value.([]interface{}) {
-			// todo: n+1 indent
-			prints(n+1, "%v\n", v)
+			prints(n + 1, "-")
+			printValue(v, n+1)
 		}
 	case []string:
+		print("\n")
 		for _, v := range value.([]string) {
-			// todo: n+1 indent
-			prints(n+1, "%v\n", v)
+			prints(n + 1, "- %v\n", v)
 		}
 	case string:
 		lines := strings.Split(value.(string), "\n")
-		print("\n")
-		for _, ln := range lines {
-			prints(n+1, "%s\n", ln)
+		if len(lines) <= 1 {
+			print(value.(string))
+			print("\n")
+		} else {
+			print("\n")
+			for _, ln := range lines {
+				prints(n+1, "%s\n", ln)
+			}
 		}
 	default:
 		f := action.Format{value}
 		if v, ok := f.String(); ok {
-			prints(0, "%#v\n", v)
+			prints(0, "%#v", v)
 		} else {
-			prints(0, "%#v\n", value)
+			prints(0, "%#v", value)
 		}
 	}
 }
