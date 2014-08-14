@@ -46,12 +46,11 @@ func main() {
 	a := &action.Action{Name: name}
 
 	res, err := local.Run(a)
+	printMap(res, 1)
 	if err != nil {
-		fmt.Printf("error: %v\n", err)
+		fmt.Printf("\nERROR %v\n", err)
 		return
 	}
-
-	printMap(res, 1)
 }
 
 // return n * 2 spaces
