@@ -9,6 +9,7 @@ import (
 	_ "github.com/crackcomm/go-core"
 	"io/ioutil"
 	"os"
+	"io"
 	"strings"
 	"flag"
 )
@@ -46,10 +47,15 @@ func main() {
 	a := &action.Action{Name: name}
 
 	res, err := local.Run(a)
-	printMap(res, 1)
+	if res != nil {
+		res = mapBytes(res)
+		printMap(res, 1)
+		fmt.Printf("\n")
+	}
 	if err != nil {
-		fmt.Printf("\nERROR %v\n", err)
-		return
+		fmt.Printf("ERROR %v", err)
+	} else {
+		fmt.Print("OK")
 	}
 }
 
@@ -106,7 +112,6 @@ func printKeyValue(key string, value interface{}, n int) {
 }
 
 func printMap(m action.Map, n int) {
-	m = mapBytes(m)
 	for key, value := range m {
 		printKeyValue(key, value, n)
 	}
@@ -121,8 +126,12 @@ func mapBytes(m action.Map) action.Map {
 			continue
 		}
 
-		// If it's a byte array we are gonna make it a string
-		if arr, ok := v.([]byte); ok {
+		// If it's a byte array or a reader we are gonna make it a string
+		if rc, ok := v.(io.ReadCloser); ok {
+			arr, _ := ioutil.ReadAll(rc)
+			rc.Close()
+			m[k] = string(arr)
+		} else if arr, ok := v.([]byte); ok {
 			m[k] = string(arr)
 		}
 	}
