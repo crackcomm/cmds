@@ -14,6 +14,8 @@ import (
 	"github.com/crackcomm/go-actions/local"
 	"github.com/golang/glog"
 
+	_ "github.com/crackcomm/go-actions/source/file"
+	_ "github.com/crackcomm/go-actions/source/http"
 	_ "github.com/crackcomm/go-core"
 )
 
@@ -41,22 +43,16 @@ func main() {
 		core.Action(name, a)
 	}
 
-	name := os.Args[1]
-
-	fmt.Printf("Running %s\n", name)
-
-	a := &action.Action{Name: name}
-
-	res, err := local.Run(a)
+	res, err := local.Run(&action.Action{Name: os.Args[1]})
 	if res != nil {
 		res = mapBytes(res)
 		printMap(res, 1)
 		fmt.Printf("\n")
 	}
 	if err != nil {
-		fmt.Printf("ERROR %v", err)
+		fmt.Printf("ERROR %v\n", err)
 	} else {
-		fmt.Print("OK")
+		fmt.Println("OK")
 	}
 }
 
