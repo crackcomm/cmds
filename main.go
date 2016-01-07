@@ -1,22 +1,22 @@
 package main
 
 import (
+	"flag"
 	"fmt"
+	"io"
+	"io/ioutil"
+	"os"
+	"strings"
+
 	"github.com/crackcomm/go-actions/action"
 	"github.com/crackcomm/go-actions/core"
 	"github.com/crackcomm/go-actions/encoding/yaml"
 	"github.com/crackcomm/go-actions/local"
 	_ "github.com/crackcomm/go-core"
-	"io/ioutil"
-	"os"
-	"io"
-	"strings"
-	"flag"
 )
 
 var (
 	filename string = "cmds.yaml" // cmds filename
-
 )
 
 func main() {
@@ -61,7 +61,7 @@ func main() {
 
 // return n * 2 spaces
 func spaces(n int) string {
-	return strings.Repeat(" ", n * 2)
+	return strings.Repeat(" ", n*2)
 }
 
 // print with spaces
@@ -73,17 +73,17 @@ func printValue(value interface{}, n int) {
 	switch value.(type) {
 	case action.Map:
 		print("\n")
-		printMap(value.(action.Map), n + 1)
+		printMap(value.(action.Map), n+1)
 	case []interface{}:
 		print("\n")
 		for _, v := range value.([]interface{}) {
-			prints(n + 1, "-")
+			prints(n+1, "-")
 			printValue(v, n+1)
 		}
 	case []string:
 		print("\n")
 		for _, v := range value.([]string) {
-			prints(n + 1, "- %v\n", v)
+			prints(n+1, "- %v\n", v)
 		}
 	case string:
 		lines := strings.Split(value.(string), "\n")
