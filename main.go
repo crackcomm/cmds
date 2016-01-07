@@ -12,14 +12,15 @@ import (
 	"github.com/crackcomm/go-actions/core"
 	"github.com/crackcomm/go-actions/encoding/yaml"
 	"github.com/crackcomm/go-actions/local"
+	"github.com/golang/glog"
+
 	_ "github.com/crackcomm/go-core"
 )
 
-var (
-	filename string = "cmds.yaml" // cmds filename
-)
+var filename = "cmds.yaml" // cmds filename
 
 func main() {
+	defer glog.Flush()
 	flag.Parse()
 	actions, err := fileToActions(filename)
 	if err != nil {
@@ -37,7 +38,7 @@ func main() {
 	}
 
 	for name, a := range actions {
-		core.Default.Registry.Add(name, a)
+		core.Action(name, a)
 	}
 
 	name := os.Args[1]
