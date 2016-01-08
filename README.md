@@ -1,15 +1,12 @@
-cmds
-====
+# cmds
 
-It's a funny replacement for Make maybe, and maybe more.
+It's a funny replacement for Make, maybe and maybe more.
 
-Installation
-------------
+## Installation
 
 	go get github.com/crackcomm/cmds
 
-Usage
------
+## Usage
 
 cmds is an application which reads cmds.yaml file reading commands from it and executing particular one
 
@@ -33,7 +30,7 @@ build:
     name: gulp build
 ```
 
-```
+```sh
 $ cmds google.title
 Running google.title
 
